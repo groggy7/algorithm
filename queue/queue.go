@@ -49,23 +49,22 @@ func (q *Queue) Dequeue() (int, error) {
 		return 0, ErrQueueAlreadyEmpty
 	}
 
-	q.front--
-	element := q.elements[0]
-	q.elements = q.elements[1:]
-	if len(q.elements) == 0 {
-		q.front = -1
-		q.rear = -1
-	}
+	element := q.elements[q.front]
+	q.front++
+	q.elements = q.elements[q.front:]
 	return element, nil
 }
 
-func (q *Queue) Display() {
-	fmt.Println("displaying the queue --> ")
-	for i, elem := range q.elements {
-		fmt.Printf("%d. element: %d\n", i, elem)
+func (q *Queue) Display() error {
+	if q.isEmpty() {
+		return ErrQueueAlreadyEmpty
 	}
-}
 
+	for i, element := range q.elements {
+		fmt.Printf("%d. element is %d\n", i, element)
+	}
+	return nil
+}
 func main() {
 	queue := NewQueue(5)
 
@@ -74,6 +73,8 @@ func main() {
 	queue.Enqueue(3)
 	queue.Enqueue(4)
 	queue.Enqueue(5)
+
+	queue.Display()
 
 	a, err := queue.Dequeue()
 	if err != nil {
