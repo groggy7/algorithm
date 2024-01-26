@@ -28,7 +28,7 @@ func (s *Stack) Push(a int) error {
 
 	s.top++
 	//After pop operation length of the slice decreases and setting element
-	//by index throws index out of range expression. That's for it.
+	//by index throws index out of range exception. That's for it.
 	if len(s.elements) < s.capacity {
 		s.elements = append(s.elements, a)
 		return nil
