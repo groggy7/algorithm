@@ -4,7 +4,6 @@ import "fmt"
 
 type LinkedList struct {
 	head *Node
-	tail *Node
 	size int
 }
 
@@ -16,35 +15,45 @@ type Node struct {
 func NewList() LinkedList {
 	return LinkedList{
 		head: nil,
-		tail: nil,
 		size: 0,
 	}
 }
 
-func (list *LinkedList) Add(value int) {
-	newNode := Node{
-		value: value,
-		next:  nil,
+func (list *LinkedList) Add(value int, index int) error {
+	if index < 0 || index > list.size {
+		return fmt.Errorf("index out of range")
 	}
 
-	if list.size == 0 {
-		list.head = &newNode
-		list.tail = &newNode
+	node := &Node{value: value, next: nil}
+
+	if index == 0 {
+		node.next = list.head
+		list.head = node
 		list.size++
-		return
-	} else if list.size == 1 {
-		list.head.next = &newNode
-		list.tail = &newNode
-		list.size++
-		return
+		return nil
 	}
 
-	list.tail.next = &newNode
-	list.tail = &newNode
+	current := list.head
+	for i := 1; i < index; i++ {
+		current = current.next
+	}
+
+	if index == list.size-1 {
+		current.next = node
+		list.size++
+	}
+
+	current.next = node
+	node.next = current.next.next
 	list.size++
+	return nil
 }
 
 func (list *LinkedList) Remove(index int) error {
+	if list.size == 0 {
+		return fmt.Errorf("cannot remove from an empty list")
+	}
+
 	if index < 0 || index >= list.size {
 		return fmt.Errorf("index out of range")
 	}
@@ -68,23 +77,25 @@ func (list *LinkedList) Remove(index int) error {
 }
 
 func (list *LinkedList) Display() {
-	if list.size == 0 {
+	if list.head == nil {
 		fmt.Println("list is empty")
+		return
 	}
 
-	fmt.Printf("list has %d items\n", list.size)
+	fmt.Printf("list has %d items: \n", list.size)
 	for iterator := list.head; iterator != nil; iterator = iterator.next {
-		fmt.Println(iterator.value)
+		fmt.Printf("%d---->", iterator.value)
 	}
+	fmt.Println()
 }
 
 func main() {
 	list := NewList()
 
-	list.Add(1)
-	list.Add(2)
-	list.Add(3)
-	list.Add(4)
+	list.Add(1, 0)
+	list.Add(2, 1)
+	list.Add(3, 2)
+	list.Add(4, 3)
 	list.Display()
 
 	list.Remove(1)
@@ -93,7 +104,7 @@ func main() {
 	list.Remove(0)
 	list.Display()
 
-	list.Add(5)
+	list.Add(5, 2)
 	list.Display()
 
 	list.Remove(2)
