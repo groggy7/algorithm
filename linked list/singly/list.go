@@ -2,7 +2,7 @@ package main
 
 import "fmt"
 
-type LinkedList struct {
+type SinglyLinkedList struct {
 	head *Node
 	size int
 }
@@ -12,14 +12,14 @@ type Node struct {
 	next  *Node
 }
 
-func NewList() LinkedList {
-	return LinkedList{
+func NewList() SinglyLinkedList {
+	return SinglyLinkedList{
 		head: nil,
 		size: 0,
 	}
 }
 
-func (list *LinkedList) Add(value int, index int) error {
+func (list *SinglyLinkedList) Insert(value int, index int) error {
 	if index < 0 || index > list.size {
 		return fmt.Errorf("index out of range")
 	}
@@ -49,7 +49,7 @@ func (list *LinkedList) Add(value int, index int) error {
 	return nil
 }
 
-func (list *LinkedList) Remove(index int) error {
+func (list *SinglyLinkedList) Remove(index int) error {
 	if list.size == 0 {
 		return fmt.Errorf("cannot remove from an empty list")
 	}
@@ -64,19 +64,24 @@ func (list *LinkedList) Remove(index int) error {
 		return nil
 	}
 
-	i := 1
-	for iterator := list.head; iterator != nil; iterator = iterator.next {
-		if index == i {
-			iterator.next = iterator.next.next
-			list.size--
-			return nil
-		}
+	iterator := list.head
+	for i := 1; i < index-1; i++ {
+		iterator = iterator.next
 		i++
 	}
+
+	if index == list.size-1 {
+		iterator.next = nil
+		list.size--
+		return nil
+	}
+
+	iterator.next = iterator.next.next
+	list.size--
 	return nil
 }
 
-func (list *LinkedList) Display() {
+func (list *SinglyLinkedList) Display() {
 	if list.head == nil {
 		fmt.Println("list is empty")
 		return
@@ -92,10 +97,10 @@ func (list *LinkedList) Display() {
 func main() {
 	list := NewList()
 
-	list.Add(1, 0)
-	list.Add(2, 1)
-	list.Add(3, 2)
-	list.Add(4, 3)
+	list.Insert(1, 0)
+	list.Insert(2, 1)
+	list.Insert(3, 2)
+	list.Insert(4, 3)
 	list.Display()
 
 	list.Remove(1)
@@ -104,9 +109,11 @@ func main() {
 	list.Remove(0)
 	list.Display()
 
-	list.Add(5, 2)
+	list.Remove(1)
+
+	list.Insert(5, 1)
 	list.Display()
 
-	list.Remove(2)
+	list.Remove(1)
 	list.Display()
 }
